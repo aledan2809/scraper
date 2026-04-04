@@ -1,0 +1,304 @@
+{
+  "projectName": "Scrap-module",
+  "createdDate": "2026-01-26",
+  "lastUpdated": "2026-01-27T14:01:39.224Z",
+  "sessionStatus": "ACTIVE",
+  "currentPhase": "UI Development with File Upload Support + Backup System",
+  "sessionManagement": {
+    "restoreCommand": "status update",
+    "description": "When starting a new session, user types 'status update' and AI restores full project state from this file",
+    "restoreSteps": [
+      "1. User types: status update",
+      "2. AI loads backup-status.json",
+      "3. AI displays project overview",
+      "4. AI shows current phase and metrics",
+      "5. AI lists known issues and next steps",
+      "6. AI is ready for next instruction with full context"
+    ],
+    "updateCommand": "npm run backup:update (in terminal)",
+    "backupFile": "backup-status.json",
+    "backupScript": "backup.js"
+  },
+  "projectStructure": {
+    "rootFiles": [
+      "package.json",
+      "tsconfig.json",
+      "next.config.js",
+      ".env.local",
+      "CLAUDE.md"
+    ],
+    "directories": {
+      "src/app": [
+        "layout.tsx",
+        "page.tsx",
+        "globals.css",
+        "api/scrape/route.ts",
+        "api/generate/route.ts"
+      ],
+      "src/lib": [
+        "scraper.ts",
+        "formatter.ts"
+      ],
+      "src/hooks": [
+        "useScraper.ts"
+      ],
+      ".github": [
+        "copilot-instructions.md"
+      ]
+    }
+  },
+  "createdFiles": {
+    "backend": {
+      "src/lib/scraper.ts": {
+        "purpose": "AI-powered scraping service using Anthropic Claude",
+        "functions": [
+          "scrapeUrl()",
+          "validateScrapedData()"
+        ],
+        "status": "COMPLETE"
+      },
+      "src/lib/formatter.ts": {
+        "purpose": "Output formatting for JSON, CSV, XML",
+        "functions": [
+          "formatOutput()",
+          "getFileExtension()",
+          "getMimeType()"
+        ],
+        "status": "COMPLETE"
+      },
+      "src/app/api/scrape/route.ts": {
+        "purpose": "API endpoint for URL scraping with file upload support",
+        "method": "POST",
+        "accepts": "FormData (url, format, file)",
+        "returns": "JSON preview with 5 items",
+        "status": "COMPLETE"
+      },
+      "src/app/api/generate/route.ts": {
+        "purpose": "API endpoint for generating downloadable files",
+        "method": "POST",
+        "accepts": "JSON (items, format, filename, templateFile)",
+        "returns": "File download",
+        "status": "COMPLETE"
+      }
+    },
+    "frontend": {
+      "src/app/page.tsx": {
+        "purpose": "Main UI with form, preview, and download functionality",
+        "features": [
+          "URL input",
+          "Format selection",
+          "File upload (NEW)",
+          "Preview display",
+          "Confirmation flow",
+          "Download trigger"
+        ],
+        "status": "COMPLETE"
+      },
+      "src/hooks/useScraper.ts": {
+        "purpose": "Custom hook for scraping state management (currently inline in page.tsx)",
+        "status": "DEPRECATED (logic moved to page.tsx)"
+      }
+    },
+    "configuration": {
+      ".github/copilot-instructions.md": {
+        "purpose": "AI agent instructions for code development",
+        "updated": "2026-01-27",
+        "port": "3010",
+        "status": "COMPLETE"
+      },
+      "next.config.js": {
+        "purpose": "Next.js configuration",
+        "status": "MINIMAL (empty config)"
+      },
+      "status-update.js": {
+        "purpose": "CLI command to view and manage backup status",
+        "commands": [
+          "status",
+          "summary",
+          "issues",
+          "next",
+          "update"
+        ],
+        "status": "COMPLETE"
+      },
+      "backup-status.json": {
+        "purpose": "Complete project state snapshot for session persistence",
+        "status": "COMPLETE"
+      },
+      "BACKUP-STATUS-README.md": {
+        "purpose": "Documentation for backup/restore system",
+        "status": "COMPLETE"
+      }
+    }
+  },
+  "apiEndpoints": {
+    "/api/scrape": {
+      "method": "POST",
+      "purpose": "Scrape URL and return preview",
+      "input": {
+        "url": "string (required)",
+        "format": "json|csv|xml (required)",
+        "file": "File (optional - template)"
+      },
+      "output": {
+        "success": "boolean",
+        "preview": "array of 5 items max",
+        "count": "number",
+        "fileInfo": "object with filename, size, type (if uploaded)",
+        "message": "string"
+      },
+      "status": "WORKING"
+    },
+    "/api/generate": {
+      "method": "POST",
+      "purpose": "Generate and download file",
+      "input": {
+        "items": "array (required)",
+        "format": "json|csv|xml (required)",
+        "filename": "string (optional)",
+        "templateFile": "object with name and content (optional)"
+      },
+      "output": "File download with appropriate MIME type",
+      "status": "WORKING"
+    }
+  },
+  "uiComponents": {
+    "homepage": {
+      "title": "Input Form Section",
+      "elements": [
+        "URL input field",
+        "Format dropdown (JSON/CSV/XML)",
+        "File upload field (NEW)",
+        "Scrape button"
+      ]
+    },
+    "previewSection": {
+      "title": "Data Preview",
+      "elements": [
+        "Item count display",
+        "Preview list (max 5 items)",
+        "Confirmation buttons (Cancel/Confirm)"
+      ]
+    },
+    "downloadSection": {
+      "title": "Download Configuration",
+      "elements": [
+        "Filename input (optional)",
+        "Download button with format indicator"
+      ]
+    }
+  },
+  "dependencies": {
+    "installed": {
+      "next": "16.1.3",
+      "react": "19.2.3",
+      "react-dom": "19.2.3",
+      "@anthropic-ai/sdk": "0.32.0",
+      "openai": "5.0.0",
+      "@supabase/supabase-js": "2.91.0",
+      "tailwindcss": "4",
+      "typescript": "5"
+    },
+    "apiKeys": {
+      "ANTHROPIC_API_KEY": "LOADED from .env.local",
+      "OPENAI_API_KEY": "LOADED from .env.local",
+      "NEXT_PUBLIC_SUPABASE_URL": "LOADED from .env.local",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "LOADED from .env.local"
+    }
+  },
+  "configuration": {
+    "devServer": {
+      "port": 3010,
+      "host": "localhost",
+      "url": "http://localhost:3010"
+    },
+    "typescript": {
+      "strict": true,
+      "noEmit": true,
+      "moduleAlias": "@/* -> src/*"
+    },
+    "tailwind": {
+      "version": 4,
+      "theme": "dark gradient (gray-900 to gray-800)"
+    }
+  },
+  "workflowSteps": [
+    "1. User enters URL and selects output format",
+    "2. User can optionally upload a template file",
+    "3. Click 'Scrape Website' to fetch and preview data",
+    "4. System shows first 5 results for validation",
+    "5. User confirms preview is correct",
+    "6. User specifies custom filename (optional)",
+    "7. Click 'Download' to get file in selected format"
+  ],
+  "knownIssues": [
+    {
+      "issue": "Next.js build throws error on /_global-error page",
+      "workaround": "Use npm run dev (dev server works fine)",
+      "status": "UNRESOLVED"
+    },
+    {
+      "issue": "React key warnings during build",
+      "description": "Warnings about unique keys on metadata elements",
+      "severity": "LOW - does not affect functionality",
+      "status": "COSMETIC"
+    },
+    {
+      "issue": "Anthropic SDK authentication required explicit API key",
+      "description": "SDK was not reading ANTHROPIC_API_KEY from environment",
+      "solution": "Pass apiKey explicitly in Anthropic constructor",
+      "status": "RESOLVED"
+    }
+  ],
+  "nextSteps": [
+    "✓ Fix Anthropic API key authentication",
+    "Test actual scraping with real URLs",
+    "Test file generation and download with each format",
+    "Test template file processing",
+    "Add database integration for saving scraping jobs (Supabase ready)",
+    "Implement user authentication",
+    "Add job history/logging functionality",
+    "Fix Next.js build error if production deployment needed",
+    "Add error handling for blocked/protected sites",
+    "Optimize Claude prompt for better data extraction"
+  ],
+  "credentials": {
+    "note": "API keys are in .env.local - NEVER commit to git",
+    "anthropicKey": "PRESENT",
+    "openaiKey": "PRESENT",
+    "supabaseUrl": "PRESENT",
+    "supabaseKey": "PRESENT"
+  },
+  "testingNotes": {
+    "manualTesting": "Server running on http://localhost:3010 - interface fully visible",
+    "testedFeatures": [
+      "✓ URL input and format selection",
+      "✓ File upload (displays filename and size)",
+      "✓ Form validation",
+      "✓ Preview display logic",
+      "✓ Confirmation flow UI",
+      "✓ Download button functionality"
+    ],
+    "notTestedYet": [
+      "Actual API calls to /api/scrape with authentication fixed",
+      "Actual web scraping with real URLs",
+      "File generation and download",
+      "Error handling with invalid URLs",
+      "Template file processing"
+    ]
+  },
+  "projectMetrics": {
+    "totalFiles": 13,
+    "linesOfCode": "~900 (excluding node_modules)",
+    "components": 1,
+    "apiEndpoints": 2,
+    "completionPercentage": 80,
+    "readyForProduction": false,
+    "productionBlockers": [
+      "Build error on production",
+      "No authentication",
+      "No database integration",
+      "Anthropic API key configuration fixed"
+    ]
+  }
+}

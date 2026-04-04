@@ -1,0 +1,125 @@
+# Scrap-module — Extracted Audit Issues (Updated)
+# Source: Reports/AUDIT_E2E_2026-03-21.md
+# Date: 2026-03-26 (Phase 1 — verified against source code)
+# Audit Score: 6/10
+
+---
+
+### P0 — CRITICAL
+
+- [ ] #1 [Build] `npm run build` FAILS — `/_not-found` prerender error
+  - Error: TypeError: Cannot read properties of null (reading 'useContext')
+  - Page: `/_not-found` (Export encountered an error on /_not-found/page)
+  - Impact: Cannot build for production
+  - Fix: Add proper `src/app/not-found.tsx` with client boundary or fix layout.tsx context
+
+- [ ] #2 [Security] SSRF vulnerability — PARTIALLY FIXED
+  - File: `src/lib/scraper.ts` (validateUrlForScraping)
+  - Already blocks: localhost, 127.0.0.1, ::1, private ranges (10.x, 172.16-31.x, 192.168.x, 169.254.x), internal hostnames
+  - REMAINING: Does not block 0.0.0.0, IPv6 private ranges, DNS rebinding attacks
+  - Status: ~80% mitigated
+
+- [ ] #3 [Security] No authentication on API endpoints — cost risk
+  - Files: `src/app/api/scrape/route.ts`, `src/app/api/generate/route.ts`
+  - PARTIALLY FIXED: Rate limiting IS integrated (10 req/hr/IP via src/lib/rate-limit.ts)
+  - REMAINING: No user authentication (acceptable for local project)
+  - Status: Acceptable for local use
+
+### P1 — HIGH
+
+- [ ] #4 [Backend] Template file handling — ALREADY FIXED
+  - Audit said: template ignored in generate for JSON
+  - ACTUAL: formatter.ts has parseTemplate() + mapToTemplate() — fully functional
+  - generate/route.ts passes templateFile to formatOutput()
+  - JSON: maps template fields to scraped data (case-insensitive matching)
+  - CSV: uses template headers
+  - Minor: metadata comment added only for CSV/XML, not JSON (acceptable)
+  - Status: RESOLVED — no action needed
+
+- [ ] #5 [Backend] HTML truncation — html.substring(0, 8000)
+  - File: `src/lib/scraper.ts:95`
+  - Impact: Large pages lose important structure
+  - Recommendation: Increase to 15000+ or implement smart HTML extraction
+
+- [ ] #6 [Backend] Hardcoded 5-item limit
+  - File: `src/lib/scraper.ts:93,113`
+  - Prompt says "Extract up to 5 items maximum" + items.slice(0, 5)
+  - Recommendation: Add user-configurable item count (5/10/20)
+
+### P2 — LOW
+
+- [ ] #7 [Architecture] useScraper hook — dead code
+  - File: `src/hooks/useScraper.ts` — defined but never imported
+  - page.tsx reimplements all logic with inline useState
+  - Recommendation: Refactor page.tsx to use the hook, OR delete the hook
+
+- [ ] #8 [Dependencies] @supabase/supabase-js installed but unused
+  - File: `package.json`
+  - Zero imports/calls in source code
+  - Recommendation: Remove if not planned
+
+- [ ] #9 [Docs] README.md — needs real project documentation
+  - STRATEGY.md contains placeholder text only
+  - knowledge/README.md is empty template
+
+- [ ] #10 [Security] .env.local protection — VERIFIED OK
+  - .gitignore has `.env*.local` pattern — keys are protected
+  - Audit flagged as CRITICAL but this is a false positive
+  - Status: NO ACTION NEEDED
+
+---
+
+### SUMMARY OF PRE-EXISTING FIXES (not in original audit)
+These issues were already fixed between audit date and now:
+1. Rate limiting — implemented in src/lib/rate-limit.ts (10 req/hr/IP)
+2. SSRF protection — validateUrlForScraping() in scraper.ts
+3. Template file support — parseTemplate() + mapToTemplate() in formatter.ts
+4. openai package — already removed from package.json
+
+### ISSUES REQUIRING ACTION (ordered by priority)
+1. P0 #1 — Fix build failure (global-error prerender)
+2. P0 #2 — Improve SSRF validation (block 0.0.0.0, IPv6)
+3. P1 #5 — Increase HTML truncation limit
+4. P1 #6 — Make item count configurable
+5. P2 #7 — Clean up dead code (useScraper hook)
+6. P2 #8 — Remove unused @supabase/supabase-js
+7. P2 #9 — Add proper README
+
+---
+
+### ENV INFO
+
+**Commands:**
+- Dev: `npm run dev` (port 3010) ✅ Works
+- Build: `npm run build` ❌ FAILS (global-error prerender)
+- Start: `npm start` (port 3010)
+- Lint: `npm run lint`
+- Windows shortcut: `START_SCRAP.bat`
+
+**Key Directories:**
+- `src/app/` — Next.js App Router: UI (page.tsx) + layout
+- `src/app/api/scrape/` — POST: scrape URL via Claude AI
+- `src/app/api/generate/` — POST: generate downloadable file
+- `src/hooks/` — Custom hook useScraper (DEAD CODE)
+- `src/lib/` — Core: scraper.ts, formatter.ts, rate-limit.ts
+- `knowledge/` — Empty template
+- `Reports/` — Audit reports
+
+**Tech Stack:**
+- Next.js 16.1.3 (App Router)
+- React 19.2.3
+- TypeScript 5.x
+- TailwindCSS 4.x
+- Anthropic SDK 0.32.0 (claude-3-5-sonnet-20241022)
+- @supabase/supabase-js 2.91.0 (installed, unused)
+- ESLint 9.x + eslint-config-next
+- In-memory rate limiting (10 req/hr/IP)
+- SSRF validation (localhost, private IPs, internal hostnames)
+
+**Environment:**
+- `.env.local` — ANTHROPIC_API_KEY, OPENAI_API_KEY, Supabase credentials
+- `.env.local` in `.gitignore` ✅ Protected
+- Port: 3010
+- node_modules: ✅ Installed
+- Dev server: ✅ Works
+- Build: ❌ Fails (global-error prerender)
