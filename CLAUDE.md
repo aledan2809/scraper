@@ -225,3 +225,8 @@ Add reference files to the `knowledge/` folder. These files will be consulted du
 
 **IMPORTANT:** Always check knowledge base files before implementing features to ensure alignment with specifications.
 
+
+
+## Governance Reference
+See: `Master/knowledge/MASTER_SYSTEM.md` §1-§5. This project follows Master governance; do not duplicate rules.
+NO-TOUCH CRITIC: see `AUDIT_GAPS.md` at project root for propose-confirm-apply protocol (Master `CLAUDE.md` §2d).
