@@ -19,6 +19,11 @@ const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per hour per IP
  * Get client IP address from Next.js request
  */
 export function getClientIP(request: any): string {
+  // SECURITY NOTE: x-forwarded-for / x-real-ip are client-supplied and
+  // SPOOFABLE — an attacker can rotate these headers to bypass the per-IP
+  // rate limit entirely. This is acceptable only behind a trusted proxy that
+  // overwrites x-forwarded-for. For a directly-exposed deployment, enforce the
+  // limit on the real socket peer address (or a network/WAF layer) instead.
   // Try various headers for IP detection
   const forwarded = request.headers.get('x-forwarded-for');
   const realIP = request.headers.get('x-real-ip');
