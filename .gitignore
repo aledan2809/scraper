@@ -35,3 +35,6 @@ next-env.d.ts
 
 # Governance session tracking
 .claude-session-base
+
+# Secret-rotation backups (.env*.bak-*-rotation) — rollback anchors on disk, never track (forensic 2026-06-25)
+.env*.bak*
